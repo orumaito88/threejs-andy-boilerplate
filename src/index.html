@@ -1,34 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Ektogamat Threejs Starter Boilerplate</title>
+        <title>Dumbo Space 3D</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-        <meta name="description" content="A threejs example using threejs boilerplate - by Anderson Mancini">
+        <meta name="description" content="Visualizzatore 3d del luogo Dumbo di Bologna">
 
-        <meta property="og:url" content="https://threejs-andy-boilerplate.vercel.app/">
+        <meta property="og:url" content="https://dumbospace.it/">
         <meta property="og:type" content="website">
-        <meta property="og:title" content="EKTOGAMAT THREEJS BOILERPLATE">
-        <meta property="og:description" content="A threejs example using threejs boilerplate - by Anderson Mancini">
+        <meta property="og:title" content="DUMBOSPACE3D">
+        <meta property="og:description" content="lo spazio Dumbo di Bologna rappresentato in 3D">
         <meta property="og:image" content="../static/cover.jpg">
 
         <meta name="twitter:card" content="summary_large_image">
-        <meta property="twitter:domain" content="https://threejs-andy-boilerplate.vercel.app/">
-        <meta property="twitter:url" content="https://threejs-andy-boilerplate.vercel.app/">
-        <meta name="twitter:title" content="EKTOGAMAT THREEJS BOILERPLATE">
-        <meta name="twitter:description" content="A threejs example using threejs boilerplate - by Anderson Mancini">
+        <meta property="twitter:domain" content="https://dumbospace.it/">
+        <meta property="twitter:url" content="https://dumbospace.it/">
+        <meta name="twitter:title" content="DUMBOSPACE3D">
+        <meta name="twitter:description" content="lo spazio Dumbo di Bologna rappresentato in 3D">
         <meta name="twitter:image" content="../static/cover.jpg">
-      
-        <meta name="keywords" content="ThreeJS, HTML, CSS, JavaScript">
-        <meta name="author" content="Anderson Mancini">
+        <meta name="keywords" content="ThreeJS, HTML, CSS, JavaScript, DUMBO, Bologna">
+        <meta name="author" content="PublicsICC">
         <link rel="apple-touch-icon" sizes="180x180" href="../static/favicon/apple-touch-icon.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="../static/favicon/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="../static/favicon/favicon-16x16.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="../static/favicon/dumbo-logo.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="../static/favicon/dumbo-logo.png">
         <link rel="manifest" href="../static/favicon/site.webmanifest">
         <meta name="msapplication-TileColor" content="#ffffff">
         <meta name="theme-color" content="#ffffff">
     </head>
     <body>
+        
+        <div class="cursor">
+            <svg width="60" height="60">
+              <circle cx="30" cy="30" r="20" stroke="black" stroke-width="1" fill="white"></circle>
+              
+            </svg>
+          </div>  
+        <div class="loading-bar"></div>
+        <div class="title">DUMBO SPACE</div>
+        <div class="button-container">
+            <button class="my-button">EXPLORE</button>
+        </div>
+        <div class="exit-button">
+            <div class="exit-icon"></div>
+        </div>
+        <div class="point point-0">
+            <div class="label">1</div>
+            <div class="text">Spazio Bianco</div>
+        </div>
+        <div class="point point-1">
+            <div class="label">2</div>
+            <div class="text">Binario Centrale</div>
+        </div>
+        <div class="point point-2">
+            <div class="label">3</div>
+            <div class="text">Baia</div>
+        </div>
+        <div class="point point-3">
+            <div class="label">4</div>
+            <div class="text">Vascello</div>
+        </div>
+        <div class="point point-4">
+            <div class="label">5</div>
+            <div class="text">Temporanea</div>
+        </div>
+        <div class="point point-5">
+            <div class="label">6</div>
+            <div class="text">Officina</div>
+        </div>
+        <div class="side-window">
 
+            <!-- <img class="side-window-image"> -->
+
+            <div class="content0">
+                <!-- Your content goes here -->
+                <h2>Spazio Bianco</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            </div>
+            <div class="content1">
+                <!-- Your content goes here -->
+                <h2>Binario Centrale</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            </div>
+            <div class="content2">
+                <!-- Your content goes here -->
+                <h2>Baia</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            </div>
+            <div class="content3">
+                <!-- Your content goes here -->
+                <h2>Vascello</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            </div>
+            <div class="content4">
+                <!-- Your content goes here -->
+                <h2>Temporanea</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            </div>
+            <div class="content5">
+                <!-- Your content goes here -->
+                <h2>Officina</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            </div>
+            <div class="side-button-container">
+                <!-- <button class="side-my-button-top">Details</button> -->
+                <button class="side-my-button">Details</button>
+            </div>
+        </div>
     </body>
 </html>

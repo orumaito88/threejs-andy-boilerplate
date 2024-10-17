@@ -1,4 +1,4 @@
-import { GUI } from 'three/examples/jsm/libs/dat.gui.module.js'
+import { GUI } from 'lil-gui'
 const gui = new GUI()
 
 // create parameters for GUI

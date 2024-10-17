@@ -1,6 +1,415 @@
 body, html {
+    cursor: none;
 	margin: 0;
 	padding: 0;
 	overscroll-behavior: none;
 	overflow: hidden;
+	outline: none;
 }
+.cursor {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 9;
+    overflow: visible;
+    mix-blend-mode: difference;
+    svg {
+    overflow: visible;
+    scale: 1;
+    transform: scale 0.5s ease-in-out;
+    }
+}
+
+
+
+
+.loading-bar {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    height: 8px;
+    background-color: transparent; /* Set the background color to transparent */
+    transform: scaleX(0);
+    transform-origin: top left;
+    transition: transform 0.5s;
+    will-change: transform;
+    overflow: hidden; /* Add this line to contain the SVG */
+}
+
+.loading-bar::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(224, 27, 13, 0.829), rgba(65, 105, 225, 0.815), rgba(255, 225, 54, 0.836));
+    background-size: 200% 100%;
+    background-repeat: no-repeat;
+    animation: wavy 2.5s infinite; /* Add this line to apply the animation */
+}
+
+@keyframes wavy {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 100% 50%;
+    }
+}
+
+.loading-bar.ended{
+    transform: scaleX(0);
+    transform-origin:top right;
+    transition: transform 1.5s ease-in-out;
+}
+.title {
+	position: absolute;
+	top: 40%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+    font-family: 'Righteous', sans-serif;
+    font-weight: bold;
+	font-size: 10vh;
+	color: rgb(255, 217, 0);
+	opacity: 0;
+	transition: opacity 1s;
+	text-align: center;
+	pointer-events: none;
+}
+
+
+
+.button-container{
+	position: absolute;
+	top: 55%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	opacity: 0;
+	transition: opacity 1s;
+}
+.my-button {
+    position: relative;
+    overflow: hidden;
+    padding: 10px 20px;
+    border: none;
+    background-color: transparent;
+    color: rgb(0, 0, 0);
+    font-family: 'Righteous', sans-serif;
+    font-size: 1.5em;
+    /* cursor: pointer; */
+    cursor:none;
+    outline: none;
+    border-radius: 20px;
+    border: 2.4px solid rgb(0, 0, 0);
+    transition: background-color 0.3s, color 0.3s, border 0.3s;
+}
+
+/* .my-button::before {
+    content: "DIVE IN";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color:  rgb(255, 217, 0);
+    transform: translateY(-100%);
+    transition: transform 0.5s ease-in-out;
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    text-align: center; 
+}
+
+.my-button:hover::before {
+    transform: translateY(0%);
+} */
+.my-button:hover {
+    background-color: rgb(255, 217, 0);
+    color: rgb(255, 255, 255);
+    border: 2.4px solid rgb(255, 217, 0 );
+}
+/*//////////////////////////////////////////////////////////////////////*/
+
+/*////////////////////////points////////////////////////////*/
+
+.point
+{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+}
+.point:hover .text
+{
+    opacity: 1;
+}
+.point.visible .label
+{
+    transform: scale(1, 1);
+    transition: transform 0.3s;
+}
+.point .label
+{
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #00000077;					/*Renderli totalmente trasparenti*/
+    border: 1px solid #ffffff77;			/*Renderli totalmente trasparenti*/
+    color: #ffffff;
+    /* font-family: Helvetica, Arial, sans-serif; */
+    text-align: center;
+    line-height: 40px;
+    font-weight: 100;
+    font-size: 14px;						/*Renderli totalmente trasparenti*/
+	/* cursor: help; */
+	transform: scale(0, 0);
+    transition: transform 0.001s;
+
+}
+
+.point .text
+{
+    position: absolute;
+    top: -45px;
+    left: -75px;
+    width: 140px;
+    padding: 5px;
+    border-radius: 30px;
+    background: #00000077;
+    border: 1px solid #ffffff77;
+    color: #ffffff;
+    line-height: 1.2em;
+    /* font-family: Helvetica, Arial, sans-serif; */
+    font-weight: 100;
+    font-size: 14px;
+	opacity: 0;
+    transition: opacity 0.3s;
+    text-align: center;
+    pointer-events: none;
+}
+/*//////////////////////////////////////////////////////////////////////*/
+
+
+
+/*/////////////////////SIDE WINDOWS////////////////////////////*/
+
+.side-window {
+    position: absolute;
+    top: 30px;
+    bottom: 30px;
+    right: -30vh; /* Hide the side window by default */
+    width: 60vh;
+    height: 85vh;
+    /* background-color: #f5f5f5; */
+    /* border-left: 1px solid #ddd; */
+    overflow-y: auto;
+    opacity: 0;
+    scrollbar-width: none;
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    background-color: rgba(17, 25, 40, 0.25);
+    border-radius: 12px;
+    border: none;  
+    box-shadow: 0 10px 30px 5px rgba(0, 0, 0, 0.2);
+    filter: drop-shadow(0 30px 10px rgba(0,0,0,0.125));
+    background-image: url(exit-icon-white.svg);
+    background-position: center;
+    background-size: 110%;
+    background-repeat: no-repeat;
+    transition: opacity 1s, right 2s, background-size 1s ease-in-out; /* Add a transition effect for the right property */
+}
+
+.side-window.visible {
+    opacity: 1;
+    right: 10px; /* Show the side window when the visible class is added */
+}
+
+/* .side-window:hover {
+    background-size: 150%;
+    transition: background-size 0.5s ease-in-out; 
+} */
+
+/* Other styles remain the same */
+
+.side-window .content0,
+.side-window .content1,
+.side-window .content2,
+.side-window .content3,
+.side-window .content4,
+.side-window .content5{
+    pointer-events: none;
+    /* background-color: rgba(0, 0, 0, 0.404); */
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 1s;
+    width: 100%; /* Add this line to make the content take full width */
+    padding-top: 20px;
+    padding-left: 10px;
+    padding-left: 10px;
+}
+/*Spazio Bianco content*/
+
+.side-window .content0.visible{
+    opacity: 1;
+    transition: opacity 4s;
+}
+/*Binario Centrale content*/
+
+
+.side-window .content1.visible{
+    opacity: 1;
+    transition: opacity 4s;
+}
+/*Baia content*/
+
+
+.side-window .content2.visible{
+    opacity: 1;
+    transition: opacity 4s;
+}
+/*Vascello content*/
+
+
+.side-window .content3.visible{
+    opacity: 1;
+    transition: opacity 4s;
+}
+/*Temporanea content*/
+
+
+.side-window .content4.visible{
+    opacity: 1;
+    transition: opacity 4s;
+}
+/*officina content*/
+
+
+.side-window .content5.visible{
+    opacity: 1;
+    transition: opacity 4s;
+}
+/*//////////////////////////////////////////////////////////////////////*/
+
+
+
+/*Exit button styles*/
+.exit-button {
+    position: absolute;
+    top: auto;
+    bottom: -70px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70px;
+    height: 70px;
+    background-color: transparent; /* Set the background color to transparent */
+    /* cursor: pointer; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 1s, bottom 0.5s;
+}
+
+.exit-button.visible {
+    bottom: 40px; /* Move the button down 20px */
+    opacity: 1; /* Make the button visible */
+}
+
+.exit-icon {
+    width: 70px;
+    height: 70px;
+    background-image: url('exit-icon-white.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    transition: background-image 0.4s;
+}
+
+.exit-icon:hover{
+    background-image: url('exit-icon-black.svg');
+}
+/********************************/
+
+/* .side-window-image {
+    background-image: url(https://images.unsplash.com/photo-1641326201918-3cafc641038e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1887&q=80);
+    background-position: center;
+    background-size: cover;
+    transform: scale(0.92,0.9);
+    height: 300px;
+    width: 100%;
+    border-radius: 12px;
+    margin: 20 auto; /* Add this line to center the image horizontally
+} */
+
+/* =======================Side bar Button=========================== */
+.side-window .side-button-container {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+}
+
+.side-window .side-my-button {
+    padding: 10px 20px;
+    border: none;
+    background-color: transparent;
+    color: rgb(255, 255, 255);
+    font-size: 1.5em;
+    cursor: none;
+    outline: none;
+    border-radius: 20px;
+    border: 2.4px solid rgb(255, 255, 255);
+    transition: background-color 0.3s, color 0.3s;
+    margin: 5px;
+}
+
+.side-window .side-my-button:hover {
+    background-color: rgb(255, 255, 255);
+    color: rgb(0, 0, 0);
+}
+
+/* .side-my-button-top {
+    padding: 10px 20px;
+    border: none;
+    background-color: transparent;
+    color: rgb(0, 0, 0);
+    font-size: 1.5em;
+    cursor: pointer;
+    outline: none;
+    border-radius: 20px;
+    border: 2.4px solid rgb(0, 0, 0);
+    transition: background-color 0.3s, color 0.3s;
+    margin: 5px;
+}
+
+.side-my-button-top:hover {
+    background-color: rgb(0, 0, 0);
+    color: rgb(255, 255, 255);
+} */
+
+/* ================================================== */
+h2{
+    font-family: 'Righteous', sans-serif;
+    color: rgba(255,255,255,0.98);
+    text-transform: uppercase;
+    font-size: 2.4vw;
+}
+p{
+    color: #fff;
+    font-family: 'Lato', sans-serif;
+    text-align: center;
+    font-size: 0.8vw;
+    line-height: 150%;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
