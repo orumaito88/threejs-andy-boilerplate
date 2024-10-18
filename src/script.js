@@ -15,17 +15,21 @@ const circle = document.querySelector('.cursor');
 const links = document.querySelectorAll('a');
 
 window.addEventListener("mousemove", moveCircle);
-
+const navbar = document.querySelector('.navbar');
+navbar.addEventListener("click", () => {
+    window.open('https://dumbospace.it/', '_blank');
+})
 gsap.set(circle, {
     xPercent: -50,
     yPercent: -50
 });
 
 function moveCircle(e) {
-  
     gsap.set(circle, {
         x: e.clientX,
-        y: e.clientY
+        y: e.clientY,
+        delay: 0.03,
+        duration: 1000
     });
 }
 
@@ -57,7 +61,7 @@ const loadingBarElement = document.querySelector('.loading-bar')
 const titleElement = document.querySelector('.title')
 const buttonElement = document.querySelector('.button-container')
     buttonElement.addEventListener('mouseover', e => {
-        linkAnimIn(1.5);})
+        linkAnimIn(1.6);})
     buttonElement.addEventListener('mouseout', e => {
         linkAnimOut();})
 const loadingManager = new THREE.LoadingManager(
@@ -187,11 +191,11 @@ setTimeout(function() {
         //ADD visibility to the POI elements
         points.forEach(point => {
             point.element.addEventListener('mouseover', e => {
-                linkAnimIn(1.2);
+                linkAnimIn(1.4);
             });
             point.element.addEventListener('mouseout', e => {
-                 linkAnimOut();
-             });
+                linkAnimOut();
+            });
             point.element.classList.add('visible')
         })
         // Call the function to change the uAlpha value
@@ -257,11 +261,85 @@ scene.add(plane);
 
 ////////////////////////////////////////////////////////////////////////
 ///// LOADING GLB/GLTF MODEL FROM BLENDER
-let myModel;
+// let myModel;
+let spazioBianco;
+let binarioCentrale;
+let baia;
+let vascello;
+let temporanea;
+let officina;
+
 loader.load('models/gltf/DumboSpace_3-v1.glb', function (gltf) {
-    myModel = gltf.scene;
-    scene.add(myModel);
+    const children = [...gltf.scene.children];
+    for (const child of children) {
+        scene.add(child)
+        switch (child.name){
+            case 'Spazio_Bianco_(Bianco)':
+                spazioBianco = child;
+                // console.log(spazioBianco.children[1].material);
+                for(let i = 0; i < spazioBianco.children.length; i++){
+                    // console.log(spazioBianco.children[i].material);
+                    // spazioBianco.children[i].material.visible=false;
+                }
+                
+        console.log(child.name)
+                break;
+            case 'Binario Centrale':
+                binarioCentrale = child;
+        console.log(child.name)
+                break;
+            case 'Baia':
+                baia = child;
+        console.log(child.name)
+                break;
+            case 'Vascello_(Rosso)':
+                vascello = child;
+        console.log(child.name)
+                break;
+            case 'Temporanea_(Magenta)001':
+                temporanea = child;
+        console.log(child.name)
+                break;
+            case 'Officina_(Petrolio)':
+                officina = child;                
+        console.log(child.name)
+                break;
+
+            default:
+                break;
+        }
+
+    }
+
+    // myModel = gltf.scene;
+    // scene.add(myModel);
 })
+function toggleVisibility(clicked, bool) {
+    spazioBianco.children.forEach(child => {
+        child.material.visible = bool;
+    });
+    // binarioCentrale.children.forEach(child => {
+    //     child.material.visible = false;
+    // });
+    // baia.children.forEach(child => {
+    //     child.material.visible = false;
+    // });
+    vascello.children.forEach(child => {
+        child.material.visible = bool;
+    });
+    temporanea.children.forEach(child => {
+        child.material.visible = bool;
+    });
+    officina.children.forEach(child => {
+        child.material.visible = bool;
+    });
+
+    if(clicked) {
+    clicked.children.forEach(child => {
+        child.material.visible = !bool;
+    });
+    }
+}
 
 //POI: Points Of INTEREST
 const points = [
@@ -306,14 +384,14 @@ const sideWindowContent=[
 //GET Exit Button
 const exitButton = document.querySelector('.exit-button');
     exitButton.addEventListener('mouseover', e => {
-        linkAnimIn(1.5);})
+        linkAnimIn(1.6);})
     exitButton.addEventListener('mouseout', e => {
         linkAnimOut();})
 
 //Get Link Button
 const linkButton = document.querySelector('.side-my-button');
     linkButton.addEventListener('mouseover', e => {
-        linkAnimIn(1.5);})
+        linkAnimIn(1.6);})
     linkButton.addEventListener('mouseout', e => {
         linkAnimOut();})
 
@@ -366,10 +444,11 @@ points.forEach((point, index) => {
         // Handle the click event for the point
         if (!isIntro)
         {
-            console.log(`Point ${index} clicked!`);
+            linkAnimOut();
             // disableOrbitControlsLimits();
             switch(index) {
                 case 0:
+                    toggleVisibility(spazioBianco, false);
                     // cameraTarget = new THREE.Vector3(-3, 5, 13);
                     cameraPointPosition = new THREE.Vector3(27, 9.8, 32.6);
                     cameraRotation = new THREE.Euler(-0.14, 0.99, 0.11, 'XYZ');
@@ -377,6 +456,7 @@ points.forEach((point, index) => {
                     manageWidget(index);
                     break;
                 case 1:
+                    // toggleVisibility(binarioCentrale, false);
                     // cameraTarget = new THREE.Vector3(-5, 5, -18);
                     cameraPointPosition = new THREE.Vector3(-122, 8, 3.2);
                     cameraRotation = new THREE.Euler(-0.16, -1.08, -0.14, 'XYZ');
@@ -384,6 +464,7 @@ points.forEach((point, index) => {
                     manageWidget(index);
                     break;
                 case 2:
+                    // toggleVisibility(baia, false);
                     // cameraTarget = new THREE.Vector3(-120, 5, 40);
                     cameraPointPosition = new THREE.Vector3(-100, 5.6, 50);
                     cameraRotation = new THREE.Euler(-0.14, 1.02, 0.12, 'XYZ');
@@ -391,6 +472,7 @@ points.forEach((point, index) => {
                     manageWidget(index);
                     break;
                 case 3:
+                    toggleVisibility(vascello, false);
                     // cameraTarget = new THREE.Vector3(-120, 5, 13);
                     cameraPointPosition = new THREE.Vector3(-102, 9.5, 25);
                     cameraRotation = new THREE.Euler(-0.32, 0.88, 0.25, 'XYZ');
@@ -398,6 +480,7 @@ points.forEach((point, index) => {
                     manageWidget(index);
                     break;
                 case 4:
+                    toggleVisibility(temporanea, false);
                     // cameraTarget = new THREE.Vector3(-120, 5, -18);
                     cameraPointPosition = new THREE.Vector3(-100, 9.5, -4.9);
                     cameraRotation = new THREE.Euler(-0.25, 0.84, 0.18, 'XYZ');
@@ -405,6 +488,7 @@ points.forEach((point, index) => {
                     manageWidget(index);
                     break;
                 case 5:
+                    toggleVisibility(officina, false);
                     // cameraTarget = new THREE.Vector3(100, 5, -18);
                     cameraPointPosition = new THREE.Vector3(77, 15, 16.5);
                     cameraRotation = new THREE.Euler(-0.44, -1.14, -0.41, 'XYZ');
@@ -415,7 +499,7 @@ points.forEach((point, index) => {
                     console.error('Invalid point index');
             }
             // camera.lookAt(cameraTarget);
-            console.log(isZoom);
+            // console.log(isZoom);
             animateCamera();
         }
     });
@@ -426,8 +510,6 @@ points.forEach((point, index) => {
 
 function manageWidget(index){
     if(!isZoom){
-        // console.log(index);
-        // console.log(sideWindowContent[index]);
         sideWindow.classList.add('visible');
         sideWindowContent[index].element.classList.add('visible');
     }
@@ -449,7 +531,7 @@ function animateCamera(){
             point.element.classList.remove('visible');
         });
         disableOrbitControlsLimits();
-        console.log('Was at home position, going to target position')
+        // console.log('Was at home position, going to target position')
         gsap.to(camera.rotation, {
             duration: 2,
             x: cameraRotation.x,
@@ -474,10 +556,8 @@ function animateCamera(){
 
     }
     else{
-        console.log('Not at home position, returning to home position')
+        // console.log('Not at home position, returning to home position')
         exitButton.classList.remove('visible');
-        // console.log(camera.position);
-        // console.log(cameraHomePosition);
         gsap.to(camera.rotation, {
             duration: 2,
             x: -0.61,
@@ -511,8 +591,8 @@ function animateCamera(){
 
 linkButton.addEventListener('click',() => {
     // Add your code to handle the link button click event here
-    console.log('Link button clicked');
     // Open the link in a new tab or window
+    linkAnimOut();
     window.open('https://www.google.com', '_blank');
 });
 
@@ -522,8 +602,10 @@ linkButton.addEventListener('click',() => {
 
 exitButton.addEventListener('click', () => {
     // Add your code to handle the exit button click event here
-    console.log('Exit button clicked');
+    // console.log('Exit button clicked');
     animateCamera();
+    toggleVisibility(null, true);
+    linkAnimOut();
     sideWindow.classList.remove('visible');
     for(let i = 0; i < sideWindowContent.length; i++){
         sideWindowContent[i].element.classList.remove('visible');
@@ -645,7 +727,6 @@ function rendeLoop() {
                 temp = point.element.style.transform
                 point.element.style.transform = `translate(${translateX}px, ${translateY}px)`
                 if(temp != point.element.style.transform){
-                    // console.log("!=")
                     // remove the visible class from points
 
                     if(isDragging){
@@ -658,7 +739,6 @@ function rendeLoop() {
                 else{
                     // point.element.style.transform = `translate(${translateX}px, ${translateY}px)`
 
-                    // console.log("==")
                     // add the visible class from points
                     if(!isDragging){
                         points.forEach((point) => {
@@ -682,83 +762,3 @@ function rendeLoop() {
 }
 
 rendeLoop() //start rendering
-
-    // Model Rotation onmousemove, it works only if we have single models separated
-
-    // if(isZoom){
-        
-    //     let d = .001;
-    //     targetX = mouseX * d;
-    //     targetY = mouseY * d;
-    //     currentRotation.x += (targetRotation.x - currentRotation.x) * rotationSpeed;
-    //     currentRotation.y += (targetRotation.y - currentRotation.y) * rotationSpeed;
-
-    //     const elapsedTime = clock.getElapsedTime()
-        
-    //     if (myModel){
-    //         if (isEasing){
-    //             myModel.rotation.set(0, currentRotation.x * Math.PI / 1800, myModel.rotation.z);
-    //         }
-    //         else {
-    //             myModel.rotation.set(targetY, targetX, myModel.rotation.z);
-    //         }
-    //     // if (sphere.parent === scene){
-    //     //     scene.remove(sphere);
-    //     //     sphere.material.dispose();
-    //     //     sphere.geometry.dispose();
-    //     //     }
-    //         }
-    //     }
-
-    /////////////////////////////////////////////////////////////////////////////////////
-// /////////////////////////////////////////////////////////////////////
-// import { GUI } from 'lil-gui'
-// const gui = new GUI()
-// const index = 5         // index of the point to manage in the GUI
-// // create parameters for GUI
-// var params = {
-//     color: sunLight.color.getHex(),
-//     color2: ambient.color.getHex(), 
-//     color3: scene.background.getHex(),
-//     poiX: points[index].position.x,
-//     poiY: points[index].position.y,
-//     poiZ: points[index].position.z,
-// }
-
-// // create a function to be called by GUI
-// const update = function () {
-// 	var colorObj = new THREE.Color( params.color )
-// 	var colorObj2 = new THREE.Color( params.color2 )
-// 	var colorObj3 = new THREE.Color( params.color3 )
-// 	sunLight.color.set(colorObj)
-// 	ambient.color.set(colorObj2)
-// 	scene.background.set(colorObj3)
-//     points[index].position.set(params.poiX, params.poiY, params.poiZ)
-// }
-
-// //////////////////////////////////////////////////
-// //// GUI CONFIG
-// gui.add(sunLight, 'intensity').min(0).max(10).step(0.0001).name('Dir intensity')
-// gui.add(sunLight.position, 'x').min(-100).max(100).step(0.00001).name('Dir X pos')
-// gui.add(sunLight.position, 'y').min(0).max(100).step(0.00001).name('Dir Y pos')
-// gui.add(sunLight.position, 'z').min(-100).max(100).step(0.00001).name('Dir Z pos')
-// gui.addColor(params,'color').name('Dir color').onChange(update)
-// gui.addColor(params,'color2').name('Amb color').onChange(update)
-// gui.add(ambient, 'intensity').min(0).max(10).step(0.001).name('Amb intensity')
-// gui.addColor(params,'color3').name('BG color').onChange(update)
-
-// gui.add(params, 'poiX').min(-200).max(100).step(0.001).name('POI X pos').onChange(update)
-// gui.add(params, 'poiY').min(-200).max(100).step(0.001).name('POI Y pos').onChange(update)
-// gui.add(params, 'poiZ').min(-200).max(100).step(0.001).name('POI Z pos').onChange(update)
-// //////////////////////////////////////////////////
-
-
-// //// ON MOUSE MOVE TO GET CAMERA POSITION
-// document.addEventListener('mousemove', (event) => {
-//     event.preventDefault()
-
-//     console.log(camera.position)
-//     console.log(camera.rotation)
-
-
-// }, false)
