@@ -7,6 +7,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 import { gsap } from 'gsap'
+
 // import { injectSpeedInsights } from '@vercel/speed-insights';        //se lo installi si bugga tutto...non funziona più il npm run dev, fai solamente all'ultima build definitiva
 
 // injectSpeedInsights();
@@ -27,13 +28,12 @@ gsap.set(circle, {
 function moveCircle(e) {
     gsap.set(circle, {
         x: e.clientX,
-        y: e.clientY,
-        delay: 0.03,
-        duration: 1000
+        y: e.clientY
     });
 }
 
 function linkAnimIn(value) {
+    circle.classList.add('difference');
     gsap.to(circle, {
         duration: 0.3,
         scale: value
@@ -41,6 +41,7 @@ function linkAnimIn(value) {
 }
 
 function linkAnimOut() {
+    circle.classList.remove('difference');
     gsap.to(circle, {
         duration: 0.3,
         scale: 1
@@ -55,9 +56,11 @@ function linkAnimOut() {
 //     document.body.classList.add('hide-address-bar');
 //     }
 // });
+
+
 //// DRACO LOADER TO LOAD DRACO COMPRESSED MODELS FROM BLENDER
 
-const loadingBarElement = document.querySelector('.loading-bar')
+const loadingBarElement = document.querySelector('.loading-video')
 const titleElement = document.querySelector('.title')
 const buttonElement = document.querySelector('.button-container')
     buttonElement.addEventListener('mouseover', e => {
@@ -77,17 +80,19 @@ const loadingManager = new THREE.LoadingManager(
         // Remove the loading bar after the animation
         gsap.delayedCall(2, () => {
             // Animate the title to fade in and move to the center
-            gsap.to(titleElement, { duration: 1, opacity: 1 })
+            gsap.to(titleElement, { duration: 0.5, opacity: 1 })
             gsap.to(titleElement, { duration: 1, y: '50%', ease: 'power2.out' })
-            gsap.to(buttonElement, { duration: 0.7, opacity: 1 ,delay: 1.5})
-            gsap.to(buttonElement, { duration: 1, y: '50%', delay: 1.5, ease: 'power2.out' })
+            gsap.to(buttonElement, { duration: 0.7, opacity: 1 ,delay: 1})
+            gsap.to(buttonElement, { duration: 1, y: '50%', delay: 1, ease: 'power2.out' })
+            loadingBarElement.style.display = 'none';
+
         })
         
     },
     (item, loaded, total) => {   // Progress
-        const progressRatio = loaded / total
-        // console.log(`${(loaded / total * 100).toFixed(2)}% ${item}`)
-        loadingBarElement.style.transform = `scaleX(${progressRatio})`
+        // const progressRatio = loaded / total
+        // // console.log(`${(loaded / total * 100).toFixed(2)}% ${item}`)
+        // loadingBarElement.style.transform = `scaleX(${progressRatio})`
     },
     (error) => {    // Error
         console.error('Error loading:', error)
@@ -128,11 +133,15 @@ const renderer = new THREE.WebGLRenderer({ antialias: true}) // turn on antialia
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)) //set pixel ratio
 renderer.setSize(window.innerWidth, window.innerHeight) // make it full screen
 renderer.outputEncoding = THREE.sRGBEncoding // set color encoding
+renderer.toneMapping = THREE.ACESFilmicToneMapping
+renderer.toneMappingExposure = 1.5
+
+
 container.appendChild(renderer.domElement) // add the renderer to html div
 
 /////////////////////////////////////////////////////////////////////////
 ///// CAMERAS CONFIG
-const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 1000)
+const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 10, 1000)
 camera.position.set(180,100,40)
 const cameraHomePosition = new THREE.Vector3(
 112,
@@ -243,20 +252,20 @@ scene.add(overlay)
 
 ////////////////////////////////////////////////////////////////////////
 
-/* SUPER MEGA PLANE */
+// /* SUPER MEGA PLANE */
 
-const planeGeometry = new THREE.BoxGeometry(10000, 2, 10000, 1);
-const planeMaterial = new THREE.MeshBasicMaterial({
-    color: 0xffffff,
-    // side: THREE.DoubleSide
-});
+// const planeGeometry = new THREE.BoxGeometry(10000, 2, 10000, 1);
+// const planeMaterial = new THREE.MeshBasicMaterial({
+//     color: 0xffffff,
+//     // side: THREE.DoubleSide
+// });
 
-const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+// const plane = new THREE.Mesh(planeGeometry, planeMaterial);
 
-plane.position.set(0, -1.1, 0);
-// Add the plane to the scene
+// plane.position.set(0, -1.1, 0);
+// // Add the plane to the scene
 
-scene.add(plane);
+// scene.add(plane);
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -268,12 +277,17 @@ let baia;
 let vascello;
 let temporanea;
 let officina;
+let alberi;
 
-loader.load('models/gltf/DumboSpace_3-v1.glb', function (gltf) {
+loader.load('models/gltf/DumboSpace_pini.glb', function (gltf) {
     const children = [...gltf.scene.children];
     for (const child of children) {
         scene.add(child)
+        console.log(child);
         switch (child.name){
+            case 'Mesh_1026':
+                alberi = child;
+                break;
             case 'Spazio_Bianco_(Bianco)':
                 spazioBianco = child;
                 // console.log(spazioBianco.children[1].material);
@@ -308,38 +322,41 @@ loader.load('models/gltf/DumboSpace_3-v1.glb', function (gltf) {
             default:
                 break;
         }
-
     }
-
-    // myModel = gltf.scene;
-    // scene.add(myModel);
 })
-function toggleVisibility(clicked, bool) {
-    spazioBianco.children.forEach(child => {
-        child.material.visible = bool;
-    });
-    // binarioCentrale.children.forEach(child => {
-    //     child.material.visible = false;
-    // });
-    // baia.children.forEach(child => {
-    //     child.material.visible = false;
-    // });
-    vascello.children.forEach(child => {
-        child.material.visible = bool;
-    });
-    temporanea.children.forEach(child => {
-        child.material.visible = bool;
-    });
-    officina.children.forEach(child => {
-        child.material.visible = bool;
-    });
 
-    if(clicked) {
-    clicked.children.forEach(child => {
-        child.material.visible = !bool;
-    });
-    }
+function ToggleTreeVisibility(visibility){
+    alberi.children[0].visible = visibility;
+    alberi.children[1].visible = visibility;
 }
+
+
+// function toggleVisibility(clicked, bool) {
+//     spazioBianco.children.forEach(child => {
+//         child.material.visible = bool;
+//     });
+//     // binarioCentrale.children.forEach(child => {
+//     //     child.material.visible = false;
+//     // });
+//     // baia.children.forEach(child => {
+//     //     child.material.visible = false;
+//     // });
+//     vascello.children.forEach(child => {
+//         child.material.visible = bool;
+//     });
+//     temporanea.children.forEach(child => {
+//         child.material.visible = bool;
+//     });
+//     officina.children.forEach(child => {
+//         child.material.visible = bool;
+//     });
+
+//     if(clicked) {
+//     clicked.children.forEach(child => {
+//         child.material.visible = !bool;
+//     });
+//     }
+// }
 
 //POI: Points Of INTEREST
 const points = [
@@ -367,6 +384,10 @@ const points = [
         position: new THREE.Vector3(100, 11, 6),
         element: document.querySelector('.point-5')
     },
+    {
+        position: new THREE.Vector3(-250, 9, -18),
+        element: document.querySelector('.point-6')
+    },
 ]
 
 // Get the side window
@@ -379,6 +400,7 @@ const sideWindowContent=[
     {element: sideWindow.querySelector('.content3')},
     {element: sideWindow.querySelector('.content4')},
     {element: sideWindow.querySelector('.content5')},
+    {element: sideWindow.querySelector('.content6')}
 ]
 
 //GET Exit Button
@@ -445,10 +467,11 @@ points.forEach((point, index) => {
         if (!isIntro)
         {
             linkAnimOut();
+            
             // disableOrbitControlsLimits();
             switch(index) {
                 case 0:
-                    toggleVisibility(spazioBianco, false);
+                    // toggleVisibility(spazioBianco, false);
                     // cameraTarget = new THREE.Vector3(-3, 5, 13);
                     cameraPointPosition = new THREE.Vector3(27, 9.8, 32.6);
                     cameraRotation = new THREE.Euler(-0.14, 0.99, 0.11, 'XYZ');
@@ -460,27 +483,27 @@ points.forEach((point, index) => {
                     // cameraTarget = new THREE.Vector3(-5, 5, -18);
                     cameraPointPosition = new THREE.Vector3(-122, 8, 3.2);
                     cameraRotation = new THREE.Euler(-0.16, -1.08, -0.14, 'XYZ');
-                    updateSideWindowBackground('https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1c/58/ab/8a/dumbo-summertime-2020.jpg?w=1200&h=-1&s=1');
+                    updateSideWindowBackground('https://dumbospace.it/wp-content/uploads/2017/06/binario-centrale-copertina-800x600.jpg');
                     manageWidget(index);
                     break;
                 case 2:
                     // toggleVisibility(baia, false);
                     // cameraTarget = new THREE.Vector3(-120, 5, 40);
-                    cameraPointPosition = new THREE.Vector3(-100, 5.6, 50);
-                    cameraRotation = new THREE.Euler(-0.14, 1.02, 0.12, 'XYZ');
-                    updateSideWindowBackground('https://cdn.meeting-hub.net/images/list/2020/07/15/2327/fa31667e68c20c1488324e555f1e94a7.jpg?d=728x484');
+                    cameraPointPosition = new THREE.Vector3(-105, 6.5, 51);
+                    cameraRotation = new THREE.Euler(-0.18, 1.13, 0.16, 'XYZ');
+                    updateSideWindowBackground('https://dumbospace.it/wp-content/uploads/2017/06/baia-semivuota-allestimento-1-800x600.jpg');
                     manageWidget(index);
                     break;
                 case 3:
-                    toggleVisibility(vascello, false);
+                    // toggleVisibility(vascello, false);
                     // cameraTarget = new THREE.Vector3(-120, 5, 13);
-                    cameraPointPosition = new THREE.Vector3(-102, 9.5, 25);
-                    cameraRotation = new THREE.Euler(-0.32, 0.88, 0.25, 'XYZ');
-                    updateSideWindowBackground('https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2a/a3/d7/58/caption.jpg?w=1200&h=-1&s=1');
+                    cameraPointPosition = new THREE.Vector3(-104, 8.7, 30);
+                    cameraRotation = new THREE.Euler(-0.25, 0.84, 0.18, 'XYZ');
+                    updateSideWindowBackground('https://dumbospace.it/wp-content/uploads/2019/06/5a-800x600.jpg');
                     manageWidget(index);
                     break;
                 case 4:
-                    toggleVisibility(temporanea, false);
+                    // toggleVisibility(temporanea, false);
                     // cameraTarget = new THREE.Vector3(-120, 5, -18);
                     cameraPointPosition = new THREE.Vector3(-100, 9.5, -4.9);
                     cameraRotation = new THREE.Euler(-0.25, 0.84, 0.18, 'XYZ');
@@ -488,11 +511,19 @@ points.forEach((point, index) => {
                     manageWidget(index);
                     break;
                 case 5:
-                    toggleVisibility(officina, false);
+                    // toggleVisibility(officina, false);
                     // cameraTarget = new THREE.Vector3(100, 5, -18);
                     cameraPointPosition = new THREE.Vector3(77, 15, 16.5);
                     cameraRotation = new THREE.Euler(-0.44, -1.14, -0.41, 'XYZ');
-                    updateSideWindowBackground('https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2a/a3/d7/5b/caption.jpg?w=1100&h=-1&s=1');
+                    updateSideWindowBackground('https://dumbospace.it/wp-content/uploads/2021/11/QUESTA-800x600.jpg');
+                    manageWidget(index);
+                    break;
+                case 6:
+                    // toggleVisibility(officina, false);
+                    // cameraTarget = new THREE.Vector3(100, 5, -18);
+                    cameraPointPosition = new THREE.Vector3(-262, 9.6, -9.3);
+                    cameraRotation = new THREE.Euler(-0.11, -0.77, -0.11, 'XYZ');
+                    updateSideWindowBackground('https://dumbospace.it/wp-content/uploads/2019/07/Capannone-edited-800x600.jpg');
                     manageWidget(index);
                     break;
                 default:
@@ -526,6 +557,7 @@ function manageWidget(index){
 function animateCamera(){
     if(isZoom === false){
         isZoom = true;
+        ToggleTreeVisibility(false);
         //remove visible from points
         points.forEach((point) => {
             point.element.classList.remove('visible');
@@ -533,19 +565,19 @@ function animateCamera(){
         disableOrbitControlsLimits();
         // console.log('Was at home position, going to target position')
         gsap.to(camera.rotation, {
-            duration: 2,
+            duration: 2.5,
             x: cameraRotation.x,
             y: cameraRotation.y,
             z: cameraRotation.z,
-            ease: "power2.out",
+            ease: "power1.inOut",
         });
 
         gsap.to(camera.position, {
-            duration: 2,
+            duration: 2.5,
             x: cameraPointPosition.x,
             y: cameraPointPosition.y,
             z: cameraPointPosition.z,
-            ease: "power2.out",
+            ease: "power2.inOut",
             onComplete: function()  //Only once Completed the animation, do... p.s. puoi usare anche: () => 
                 {
                     exitButton.classList.add('visible');
@@ -553,11 +585,11 @@ function animateCamera(){
                 }
                 
         });
-
     }
     else{
         // console.log('Not at home position, returning to home position')
         exitButton.classList.remove('visible');
+        ToggleTreeVisibility(true);
         gsap.to(camera.rotation, {
             duration: 2,
             x: -0.61,
@@ -604,7 +636,7 @@ exitButton.addEventListener('click', () => {
     // Add your code to handle the exit button click event here
     // console.log('Exit button clicked');
     animateCamera();
-    toggleVisibility(null, true);
+    // toggleVisibility(null, true);
     linkAnimOut();
     sideWindow.classList.remove('visible');
     for(let i = 0; i < sideWindowContent.length; i++){

@@ -21,6 +21,10 @@ body, html {
     }
 }
 
+.cursor.difference{
+    mix-blend-mode: difference;
+}
+
 .navbar {
     position: fixed;
     top: 0;
@@ -46,48 +50,22 @@ body, html {
     height: auto;
   }
   
-
-
-.loading-bar {
-    position: absolute;
-    top: 50%;
-    width: 100%;
-    height: 8px;
-    background-color: transparent; /* Set the background color to transparent */
-    transform: scaleX(0);
-    transform-origin: top left;
-    transition: transform 0.5s;
-    will-change: transform;
-    overflow: hidden; /* Add this line to contain the SVG */
-}
-
-.loading-bar::before {
-    content: "";
+.loading-video {
+    background: url('loadingVideo.gif') no-repeat center center;
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
     height: 100%;
-    background: linear-gradient(to right, rgba(224, 27, 13, 0.829), rgba(65, 105, 225, 0.815), rgba(255, 225, 54, 0.836));
-    background-size: 200% 100%;
-    background-repeat: no-repeat;
-    animation: wavy 2.5s infinite; /* Add this line to apply the animation */
+    width: 100%;
+    z-index: 9999999;
+    opacity: 1;
+    transition: opacity 2s;
+
+}
+.loading-video.ended{
+    opacity: 0;
 }
 
-@keyframes wavy {
-    0% {
-        background-position: 0% 50%;
-    }
-    100% {
-        background-position: 100% 50%;
-    }
-}
-
-.loading-bar.ended{
-    transform: scaleX(0);
-    transform-origin:top right;
-    transition: transform 1.5s ease-in-out;
-}
 .title {
 	position: absolute;
 	top: 40%;
@@ -181,24 +159,24 @@ body, html {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: #00000077;					/*Renderli totalmente trasparenti*/
-    border: 1px solid #ffffff77;			/*Renderli totalmente trasparenti*/
+    background: rgba(223, 223, 0, 0.562);
     color: #ffffff;
     /* font-family: Helvetica, Arial, sans-serif; */
     text-align: center;
     line-height: 40px;
     font-weight: 100;
-    font-size: 14px;						/*Renderli totalmente trasparenti*/
+    font-size: 0px;						
 	/* cursor: help; */
 	transform: scale(0, 0);
     transition: transform 0.001s;
 
 }
 
+
 .point .text
 {
     position: absolute;
-    top: -45px;
+    top: -50px;
     left: -75px;
     width: 140px;
     padding: 5px;
@@ -264,7 +242,8 @@ body, html {
 .side-window .content2,
 .side-window .content3,
 .side-window .content4,
-.side-window .content5{
+.side-window .content5,
+.side-window .content6{
     pointer-events: none;
     /* background-color: rgba(0, 0, 0, 0.404); */
     position: absolute;
@@ -316,6 +295,11 @@ body, html {
 
 
 .side-window .content5.visible{
+    opacity: 1;
+    transition: opacity 4s;
+}
+
+.side-window .content6.visible{
     opacity: 1;
     transition: opacity 4s;
 }
