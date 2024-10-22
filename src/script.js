@@ -118,6 +118,23 @@ document.body.appendChild(container)
 const scene = new THREE.Scene()
 scene.background = new THREE.Color('#ffffff')
 
+// const cubeTextureLoader = new THREE.CubeTextureLoader()
+
+// const environmentMap = cubeTextureLoader.load([
+//     './enviromentMaps/nx.jpg',
+//     './enviromentMaps/nx.jpg',
+//     './enviromentMaps/py.jpg',
+//     './enviromentMaps/ny.jpg',
+//     './enviromentMaps/pz.jpg',
+//     './enviromentMaps/nz.jpg'
+// ])
+// console.log(environmentMap)
+// scene.background = environmentMap
+// scene.environment = environmentMap
+
+// scene.environmentIntensity = 1
+// scene.backgroundBlurriness = 0.2
+// scene.backgroundIntensity = 1
 /////////////////////////////////////////////////////////////////////////
 
 // // Create a fog effect
@@ -167,8 +184,8 @@ window.addEventListener('resize', () => {
 
 /////////////////////////////////////////////////////////////////////////
 // Axes Helper
-const axesHelper=new THREE.AxesHelper(5)
-scene.add(axesHelper)
+// const axesHelper=new THREE.AxesHelper(5)
+// scene.add(axesHelper)
 
 /////////////////////////////////////////////////////////////////////////
 ///// CREATE ORBIT CONTROLS
@@ -278,15 +295,21 @@ let vascello;
 let temporanea;
 let officina;
 let alberi;
+let alberi2;
 
-loader.load('models/gltf/DumboSpace_pini.glb', function (gltf) {
+loader.load('models/gltf/DumboSpace_2alberi.glb', function (gltf) {
     const children = [...gltf.scene.children];
     for (const child of children) {
         scene.add(child)
         console.log(child);
         switch (child.name){
-            case 'Mesh_1026':
+            case 'Albero1':
                 alberi = child;
+                alberi.children[1].material.opacity = 1;
+                break;
+            case 'Albero2':
+                alberi2 = child;
+                alberi2.children[1].material.opacity = 1.5;
                 break;
             case 'Spazio_Bianco_(Bianco)':
                 spazioBianco = child;
@@ -328,6 +351,8 @@ loader.load('models/gltf/DumboSpace_pini.glb', function (gltf) {
 function ToggleTreeVisibility(visibility){
     alberi.children[0].visible = visibility;
     alberi.children[1].visible = visibility;
+    alberi2.children[0].visible = visibility;
+    alberi2.children[1].visible = visibility;
 }
 
 
@@ -361,31 +386,31 @@ function ToggleTreeVisibility(visibility){
 //POI: Points Of INTEREST
 const points = [
     {
-        position: new THREE.Vector3(-3,11, 13),
+        position: new THREE.Vector3(-3, 2, 13),
         element: document.querySelector('.point-0')
     },
     {
-        position: new THREE.Vector3(-100, 11, -18),
+        position: new THREE.Vector3(-100, 2, -18),
         element: document.querySelector('.point-1')
     },
     {
-        position: new THREE.Vector3(-120, 9, 40),
+        position: new THREE.Vector3(-120, 2, 40),
         element: document.querySelector('.point-2')
     },
     {
-        position: new THREE.Vector3(-120, 10, 13),
+        position: new THREE.Vector3(-120, 2, 13),
         element: document.querySelector('.point-3')
     },
     {
-        position: new THREE.Vector3(-120, 9, -18),
+        position: new THREE.Vector3(-120, 2, -18),
         element: document.querySelector('.point-4')
     },
     {
-        position: new THREE.Vector3(100, 11, 6),
+        position: new THREE.Vector3(100,  2, 6),
         element: document.querySelector('.point-5')
     },
     {
-        position: new THREE.Vector3(-250, 9, -18),
+        position: new THREE.Vector3(-250, 2, -18),
         element: document.querySelector('.point-6')
     },
 ]
@@ -784,7 +809,6 @@ function rendeLoop() {
     if(isIntro){
         controls.update() // update orbit controls
     }
-
 
     
     renderer.render(scene, camera) // render the scene using the camera
