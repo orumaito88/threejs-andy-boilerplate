@@ -7,6 +7,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 import { gsap } from 'gsap'
+import { GUI } from 'lil-gui'
 
 // import { injectSpeedInsights } from '@vercel/speed-insights';        //se lo installi si bugga tutto...non funziona più il npm run dev, fai solamente all'ultima build definitiva
 
@@ -116,7 +117,7 @@ document.body.appendChild(container)
 
 ///// SCENE CREATION
 const scene = new THREE.Scene()
-scene.background = new THREE.Color('#ffffff')
+scene.background = new THREE.Color('#c7dcff')
 
 // const cubeTextureLoader = new THREE.CubeTextureLoader()
 
@@ -137,12 +138,12 @@ scene.background = new THREE.Color('#ffffff')
 // scene.backgroundIntensity = 1
 /////////////////////////////////////////////////////////////////////////
 
-// // Create a fog effect
-// const fog = new THREE.FogExp2(0x545454, 0.002); // Use exponential fog
-// // const fog = new THREE.Fog(0x000000, 0.002); // Use linear fog
+// Create a fog effect
+const fog = new THREE.FogExp2(0xc7dcff, 0.0035); // Use exponential fog
+// const fog = new THREE.Fog(0x000000, 0.002); // Use linear fog
 
-// // Add the fog to the scene
-// scene.fog = fog;
+// Add the fog to the scene
+scene.fog = fog;
 
 /////////////////////////////////////////////////////////////////////////
 ///// RENDERER CONFIG
@@ -158,8 +159,8 @@ container.appendChild(renderer.domElement) // add the renderer to html div
 
 /////////////////////////////////////////////////////////////////////////
 ///// CAMERAS CONFIG
-const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 10, 1000)
-camera.position.set(180,100,40)
+const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 10, 2000)
+camera.position.set(180, 100, 40)
 const cameraHomePosition = new THREE.Vector3(
 112,
 108,
@@ -193,12 +194,15 @@ const controls = new OrbitControls(camera, renderer.domElement)
 
 /////////////////////////////////////////////////////////////////////////
 ///// SCENE LIGHTS
-const ambient = new THREE.AmbientLight(0xa3a3a3, 0.45)
+const ambient = new THREE.AmbientLight(0x8c8c8c, 0.9)
 scene.add(ambient)
 
-const sunLight = new THREE.DirectionalLight(0xd7c9ad, 2.2)
-sunLight.position.set(58,25,22)
+const sunLight = new THREE.DirectionalLight(0xe3e3e3, 0.55)
+sunLight.position.set(9,70,4.1)
+sunLight.castShadow = false;
+
 scene.add(sunLight)
+
 
 // const cameraHelper = new THREE.CameraHelper(sunLight.shadow.camera)
 // scene.add(cameraHelper)
@@ -219,7 +223,6 @@ setTimeout(function() {
             onComplete: function(){
                 setTimeout(() => {
                     loadingBarElement.style.display = 'none';
-                    console.log(loadingBarElement);
                 }, 2000);
             }
         });
@@ -310,7 +313,7 @@ let officina;
 let alberi;
 let alberi2;
 
-loader.load('models/gltf/DumboSpace_2alberi.glb', function (gltf) {
+loader.load('models/gltf/DumboMappa3D.glb', function (gltf) {
     const children = [...gltf.scene.children];
     for (const child of children) {
         scene.add(child)
@@ -362,10 +365,19 @@ loader.load('models/gltf/DumboSpace_2alberi.glb', function (gltf) {
 })
 
 function ToggleTreeVisibility(visibility){
-    alberi.children[0].visible = visibility;
-    alberi.children[1].visible = visibility;
-    alberi2.children[0].visible = visibility;
-    alberi2.children[1].visible = visibility;
+    console.log(alberi.scale);
+    if(visibility){
+        gsap.to(alberi.scale, {duration: 2, x: alberi.scale.x, y: 0.16, z: alberi.scale.z})
+        gsap.to(alberi2.scale, {duration: 2, x: alberi2.scale.x, y: 0.16, z: alberi2.scale.z})
+    }
+    else{
+        gsap.to(alberi.scale, {duration: 2, x: alberi.scale.x, y: 0, z: alberi.scale.z})
+        gsap.to(alberi2.scale, {duration: 2, x: alberi2.scale.x, y: 0, z: alberi2.scale.z})
+    }
+    // alberi.children[0].visible = visibility;
+    // alberi.children[1].visible = visibility;
+    // alberi2.children[0].visible = visibility;
+    // alberi2.children[1].visible = visibility;
 }
 
 
@@ -617,7 +629,7 @@ function animateCamera(){
             z: cameraPointPosition.z,
             ease: "power2.inOut",
             onComplete: function()  //Only once Completed the animation, do... p.s. puoi usare anche: () => 
-                {
+                {   
                     exitButton.classList.add('visible');
                     isZoom = true;
                 }
@@ -627,6 +639,7 @@ function animateCamera(){
     else{
         // console.log('Not at home position, returning to home position')
         exitButton.classList.remove('visible');
+        ToggleTreeVisibility(true);
         // ToggleTreeVisibility(true);
         gsap.to(camera.rotation, {
             duration: 2.5,
@@ -647,7 +660,6 @@ function animateCamera(){
                     points.forEach((point) => {
                         point.element.classList.add('visible');
                     });
-                    ToggleTreeVisibility(true);
                     setOrbitControlsLimits();
                     isZoom = false;
                 }
@@ -832,3 +844,39 @@ function rendeLoop() {
 }
 
 rendeLoop() //start rendering
+
+
+const gui = new GUI()
+
+// create parameters for GUI
+var params = {color: sunLight.color.getHex(), color2: ambient.color.getHex(), color3: scene.background.getHex()}
+
+// create a function to be called by GUI
+const update = function () {
+	var colorObj = new THREE.Color( params.color )
+	var colorObj2 = new THREE.Color( params.color2 )
+	var colorObj3 = new THREE.Color( params.color3 )
+	sunLight.color.set(colorObj)
+	ambient.color.set(colorObj2)
+	scene.background.set(colorObj3)
+}
+
+//////////////////////////////////////////////////
+//// GUI CONFIG
+gui.add(sunLight, 'intensity').min(0).max(10).step(0.0001).name('Dir intensity')
+gui.add(sunLight.position, 'x').min(-100).max(100).step(0.00001).name('Dir X pos')
+gui.add(sunLight.position, 'y').min(0).max(100).step(0.00001).name('Dir Y pos')
+gui.add(sunLight.position, 'z').min(-100).max(100).step(0.00001).name('Dir Z pos')
+gui.addColor(params,'color').name('Dir color').onChange(update)
+gui.addColor(params,'color2').name('Amb color').onChange(update)
+gui.add(ambient, 'intensity').min(0).max(10).step(0.001).name('Amb intensity')
+gui.addColor(params,'color3').name('BG color').onChange(update)
+
+//////////////////////////////////////////////////
+//// ON MOUSE MOVE TO GET CAMERA POSITION
+// document.addEventListener('mousemove', (event) => {
+//     event.preventDefault()
+
+//     console.log(camera.position)
+
+// }, false)
