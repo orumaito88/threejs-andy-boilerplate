@@ -73,7 +73,7 @@ const loadingManager = new THREE.LoadingManager(
         gsap.delayedCall(0.5, () =>{                //gsap animation after 0.5 seconds  
             gsap.to(overlayMaterial.uniforms.uAlpha, {duration: 3, value: 1})
             loadingBarElement.classList.add('ended')
-            loadingBarElement.style.transform = ''
+            // loadingBarElement.style.transform = ''
         })
         // ...
         
@@ -211,6 +211,19 @@ const button = document.querySelector('.my-button')
 // Delay the event listener by 1 second
 setTimeout(function() {
     button.addEventListener('click', function() {
+        //loading video opacity 1
+        
+        loadingBarElement.style.display = '';
+        loadingBarElement.style.opacity = 1;
+        gsap.to(loadingBarElement, { duration: 3.8 , opacity: 0,
+            onComplete: function(){
+                setTimeout(() => {
+                    loadingBarElement.style.display = 'none';
+                    console.log(loadingBarElement);
+                }, 2000);
+            }
+        });
+
         isIntro = false;
         linkAnimOut();
     if(!isIntro) {
@@ -386,7 +399,7 @@ function ToggleTreeVisibility(visibility){
 //POI: Points Of INTEREST
 const points = [
     {
-        position: new THREE.Vector3(-3, 2, 13),
+        position: new THREE.Vector3(3, 2, 18),
         element: document.querySelector('.point-0')
     },
     {
@@ -394,15 +407,15 @@ const points = [
         element: document.querySelector('.point-1')
     },
     {
-        position: new THREE.Vector3(-120, 2, 40),
+        position: new THREE.Vector3(-115, 2, 45),
         element: document.querySelector('.point-2')
     },
     {
-        position: new THREE.Vector3(-120, 2, 13),
+        position: new THREE.Vector3(-120, 2, 15),
         element: document.querySelector('.point-3')
     },
     {
-        position: new THREE.Vector3(-120, 2, -18),
+        position: new THREE.Vector3(-120, 2, -15),
         element: document.querySelector('.point-4')
     },
     {
@@ -410,7 +423,7 @@ const points = [
         element: document.querySelector('.point-5')
     },
     {
-        position: new THREE.Vector3(-250, 2, -18),
+        position: new THREE.Vector3(-255, 2, -20),
         element: document.querySelector('.point-6')
     },
 ]
@@ -614,26 +627,27 @@ function animateCamera(){
     else{
         // console.log('Not at home position, returning to home position')
         exitButton.classList.remove('visible');
-        ToggleTreeVisibility(true);
+        // ToggleTreeVisibility(true);
         gsap.to(camera.rotation, {
-            duration: 2,
+            duration: 2.5,
             x: -0.61,
             y: 0.54,
             z: 0.34,
-            ease: "power2.out",
+            ease: "power1.in",
         })
         gsap.to(camera.position, {
-            duration: 2,
+            duration: 2.5,
             x: 112,
             y: 108,
             z: 155,
-            ease: "power2.out",
+            ease: "power1.in",
             onComplete: function()  //Only once Completed the animation, do... p.s. puoi usare anche: () => 
                 {
                     //add visible to points
                     points.forEach((point) => {
                         point.element.classList.add('visible');
                     });
+                    ToggleTreeVisibility(true);
                     setOrbitControlsLimits();
                     isZoom = false;
                 }
