@@ -7,7 +7,6 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 import { gsap } from 'gsap'
-import { GUI } from 'lil-gui'
 
 // import { injectSpeedInsights } from '@vercel/speed-insights';        //se lo installi si bugga tutto...non funziona più il npm run dev, fai solamente all'ultima build definitiva
 
@@ -19,7 +18,19 @@ const links = document.querySelectorAll('a');
 window.addEventListener("mousemove", moveCircle);
 const navbar = document.querySelector('.navbar');
 navbar.addEventListener("click", () => {
-    window.open('https://dumbospace.it/', '_blank');
+    // window.open('https://dumbospace.it/', '_blank');
+    isZoom = true;
+    points.forEach((point) => {
+        point.element.classList.remove('visible');
+    });
+    disableOrbitControlsLimits();
+    animateCamera();
+    // toggleVisibility(null, true);
+    linkAnimOut();
+    sideWindow.classList.remove('visible');
+    for(let i = 0; i < sideWindowContent.length; i++){
+        sideWindowContent[i].element.classList.remove('visible');
+    }
 })
 gsap.set(circle, {
     xPercent: -50,
@@ -117,7 +128,7 @@ document.body.appendChild(container)
 
 ///// SCENE CREATION
 const scene = new THREE.Scene()
-scene.background = new THREE.Color('#c7dcff')
+scene.background = new THREE.Color('#d6e5ff')
 
 // const cubeTextureLoader = new THREE.CubeTextureLoader()
 
@@ -139,7 +150,7 @@ scene.background = new THREE.Color('#c7dcff')
 /////////////////////////////////////////////////////////////////////////
 
 // Create a fog effect
-const fog = new THREE.FogExp2(0xc7dcff, 0.0035); // Use exponential fog
+const fog = new THREE.FogExp2(0xd6e5ff, 0.003); // Use exponential fog
 // const fog = new THREE.Fog(0x000000, 0.002); // Use linear fog
 
 // Add the fog to the scene
@@ -194,13 +205,11 @@ const controls = new OrbitControls(camera, renderer.domElement)
 
 /////////////////////////////////////////////////////////////////////////
 ///// SCENE LIGHTS
-const ambient = new THREE.AmbientLight(0x8c8c8c, 0.9)
+const ambient = new THREE.AmbientLight(0x696969, 0.9)
 scene.add(ambient)
 
-const sunLight = new THREE.DirectionalLight(0xe3e3e3, 0.55)
+const sunLight = new THREE.DirectionalLight(0xb4b78a, 0.55)
 sunLight.position.set(9,70,4.1)
-sunLight.castShadow = false;
-
 scene.add(sunLight)
 
 
@@ -208,7 +217,41 @@ scene.add(sunLight)
 // scene.add(cameraHelper)
 /////////////////////////////////////////////////////////////////////////
 
+////////////Sun and Moon///////////////
+document.querySelector('#checkbox').addEventListener('change', () => {
+    toggleLigthMode();
+});
 
+let isLightOn = true;
+function toggleLigthMode() {
+    if (isLightOn) {
+        gsap.to(ambient, {
+            intensity: 0.0,
+            duration: 1
+        })
+        gsap.to(sunLight, {
+            intensity: 0.0,
+            duration: 1,
+            onComplete: function(){
+                strada.visible = false;
+            }
+        },)        
+        isLightOn = false;
+        //remove visiblity to strada
+    } else {
+        gsap.to(ambient, {
+            intensity: 0.9,
+            duration: 1
+        })
+        gsap.to(sunLight, {
+            intensity: 0.55,
+            duration: 1
+        }) 
+        strada.visible = true;
+        isLightOn = true;
+    }
+    
+}
 /////////////////////////////////////////////////////////////////////////
 // Add event listener to the button
 const button = document.querySelector('.my-button')
@@ -312,6 +355,7 @@ let temporanea;
 let officina;
 let alberi;
 let alberi2;
+let strada;
 
 loader.load('models/gltf/DumboMappa3D.glb', function (gltf) {
     const children = [...gltf.scene.children];
@@ -357,7 +401,9 @@ loader.load('models/gltf/DumboMappa3D.glb', function (gltf) {
                 officina = child;                
         console.log(child.name)
                 break;
-
+            case 'Strada':
+                strada = child
+        console.log(child.name)
             default:
                 break;
         }
@@ -365,14 +411,14 @@ loader.load('models/gltf/DumboMappa3D.glb', function (gltf) {
 })
 
 function ToggleTreeVisibility(visibility){
-    console.log(alberi.scale);
+    // console.log(alberi.scale);
     if(visibility){
-        gsap.to(alberi.scale, {duration: 2, x: alberi.scale.x, y: 0.16, z: alberi.scale.z})
-        gsap.to(alberi2.scale, {duration: 2, x: alberi2.scale.x, y: 0.16, z: alberi2.scale.z})
+        gsap.to(alberi.position, {duration: 2, x: alberi.position.x, y: 0, z: alberi.position.z})
+        gsap.to(alberi2.position, {duration: 2, x: alberi2.position.x, y: 0, z: alberi2.position.z})
     }
     else{
-        gsap.to(alberi.scale, {duration: 2, x: alberi.scale.x, y: 0, z: alberi.scale.z})
-        gsap.to(alberi2.scale, {duration: 2, x: alberi2.scale.x, y: 0, z: alberi2.scale.z})
+        gsap.to(alberi.position, {duration: 2, x: alberi.position.x, y: -22, z: alberi.position.z})
+        gsap.to(alberi2.position, {duration: 2, x: alberi2.position.x, y: -22, z: alberi2.position.z})
     }
     // alberi.children[0].visible = visibility;
     // alberi.children[1].visible = visibility;
@@ -514,6 +560,7 @@ points.forEach((point, index) => {
     point.element.addEventListener('click', () => {
         // controls.enabled = false; // Disable orbit controls to animate the camera
         // Handle the click event for the point
+
         if (!isIntro)
         {
             linkAnimOut();
@@ -581,7 +628,7 @@ points.forEach((point, index) => {
             }
             // camera.lookAt(cameraTarget);
             // console.log(isZoom);
-            animateCamera();
+            animateCamera(index);
         }
     });
 });
@@ -603,9 +650,36 @@ function manageWidget(index){
 }
 
 /////////////////////////////////////////////////////////////////////////
+const pointLight = new THREE.PointLight( 0xffffff, 0, 60 );
+pointLight.castShadow = true;
+pointLight.power = 0;
+
 //Function to animate the camera to the target point
-function animateCamera(){
+function animateCamera(index){
     if(isZoom === false){
+        if(!isLightOn){
+            pointLight.power = 0;
+            //add a point light in the position of the clicked point
+            pointLight.position.x = points[index].position.x + 20 ;
+            pointLight.position.y = points[index].position.y + 50;
+            pointLight.position.z = points[index].position.z + 3 ;
+            if(index == 2){     //baia case
+                pointLight.position.x = points[index].position.x + 5 ;
+                pointLight.position.y = points[index].position.y + 50;
+                pointLight.position.z = points[index].position.z - 8 ;
+            }
+            if(index == 5){     //officina case
+                pointLight.position.x = points[index].position.x -10 ;
+                pointLight.position.y = points[index].position.y + 50;
+                pointLight.position.z = points[index].position.z - 5 ;
+            }
+
+            scene.add(pointLight);
+            gsap.to(pointLight, {
+                power: 40,
+                duration: 5,
+            })
+        }
         isZoom = true;
         ToggleTreeVisibility(false);
         //remove visible from points
@@ -637,6 +711,18 @@ function animateCamera(){
         });
     }
     else{
+        if(!isLightOn){
+        gsap.to(pointLight, {
+                power: 0,
+                duration: 1.5,
+                onComplete: function(){
+                    //erase the point light from the scene
+                    if(pointLight){
+                        scene.remove(pointLight);
+                    }
+                }
+            })
+        }
         // console.log('Not at home position, returning to home position')
         exitButton.classList.remove('visible');
         ToggleTreeVisibility(true);
@@ -660,6 +746,7 @@ function animateCamera(){
                     points.forEach((point) => {
                         point.element.classList.add('visible');
                     });
+
                     setOrbitControlsLimits();
                     isZoom = false;
                 }
@@ -722,23 +809,6 @@ function disableOrbitControlsLimits(){
 camera.rotation.set(-0.6,0.5,0.34);
 
 let temp;
-// let isMousePressed = new Boolean();
-// isMousePressed = false;
-
-//Mouse events
-// document.addEventListener('mousedown', (e) => {
-//     e.preventDefault()
-
-//     isMousePressed = true;
-// }, false)
-
-// document.addEventListener('mouseup', (e) => {
-//     e.preventDefault()
-
-//     isMousePressed = false;
-// }, false)
-
-//////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////Mouse Dragging to move camera/////////////////////////
 
@@ -751,10 +821,14 @@ let dampingFactor = 0.5; // Adjust this value to control the damping effect (0.0
 
 // Define the boundaries for the camera movement
 const cameraBounds = {
-    minX: -150,
-    maxX: 150,
-    minZ: 0,
-    maxZ: 180
+    // minX: -150,
+    // maxX: 200,
+    // minZ: 0,
+    // maxZ: 250
+    minX: -500,
+    maxX: 700,
+    minZ: -500,
+    maxZ: 750
 };
 
 document.addEventListener('mousedown', (e) => {
@@ -789,12 +863,12 @@ document.addEventListener('mousemove', (e) => {
         camera.position.x = Math.max(cameraBounds.minX, Math.min(cameraBounds.maxX, camera.position.x));
         camera.position.z = Math.max(cameraBounds.minZ, Math.min(cameraBounds.maxZ, camera.position.z));
     }
-
     previousMousePosition = {
         x: e.clientX,
         y: e.clientY
     };
 }, false);
+controls.autoRotate = false
 
 //// RENDER LOOP FUNCTION
 function rendeLoop() {
@@ -831,11 +905,9 @@ function rendeLoop() {
             }
         }
     }
-    controls.autoRotate = false
     if(isIntro){
         controls.update() // update orbit controls
     }
-
     
     renderer.render(scene, camera) // render the scene using the camera
 
@@ -844,39 +916,3 @@ function rendeLoop() {
 }
 
 rendeLoop() //start rendering
-
-
-const gui = new GUI()
-
-// create parameters for GUI
-var params = {color: sunLight.color.getHex(), color2: ambient.color.getHex(), color3: scene.background.getHex()}
-
-// create a function to be called by GUI
-const update = function () {
-	var colorObj = new THREE.Color( params.color )
-	var colorObj2 = new THREE.Color( params.color2 )
-	var colorObj3 = new THREE.Color( params.color3 )
-	sunLight.color.set(colorObj)
-	ambient.color.set(colorObj2)
-	scene.background.set(colorObj3)
-}
-
-//////////////////////////////////////////////////
-//// GUI CONFIG
-gui.add(sunLight, 'intensity').min(0).max(10).step(0.0001).name('Dir intensity')
-gui.add(sunLight.position, 'x').min(-100).max(100).step(0.00001).name('Dir X pos')
-gui.add(sunLight.position, 'y').min(0).max(100).step(0.00001).name('Dir Y pos')
-gui.add(sunLight.position, 'z').min(-100).max(100).step(0.00001).name('Dir Z pos')
-gui.addColor(params,'color').name('Dir color').onChange(update)
-gui.addColor(params,'color2').name('Amb color').onChange(update)
-gui.add(ambient, 'intensity').min(0).max(10).step(0.001).name('Amb intensity')
-gui.addColor(params,'color3').name('BG color').onChange(update)
-
-//////////////////////////////////////////////////
-//// ON MOUSE MOVE TO GET CAMERA POSITION
-// document.addEventListener('mousemove', (event) => {
-//     event.preventDefault()
-
-//     console.log(camera.position)
-
-// }, false)
