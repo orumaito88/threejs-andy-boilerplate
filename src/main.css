@@ -37,19 +37,19 @@ body, html {
     justify-content: space-between;
     padding: 10px 20px;
     z-index: 999;
-  }
-  
-  .navbar-logo {
+}
+
+.navbar-logo {
     width: 50px;
     height: auto;
     cursor: pointer;
-  }
-  
-  .navbar-logo img {
+}
+
+.navbar-logo img {
     width: 100%;
     height: auto;
-  }
-  
+}
+
 .loading-video {
     background: url('loadingVideo.gif') no-repeat center center;
     position: absolute;
@@ -108,25 +108,6 @@ body, html {
     transition: background-color 0.3s, color 0.3s, border 0.3s;
 }
 
-/* .my-button::before {
-    content: "DIVE IN";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color:  rgb(255, 217, 0);
-    transform: translateY(-100%);
-    transition: transform 0.5s ease-in-out;
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    text-align: center; 
-}
-
-.my-button:hover::before {
-    transform: translateY(0%);
-} */
 .my-button:hover {
     background-color: rgb(255, 217, 0);
     color: rgb(255, 255, 255);
@@ -141,6 +122,7 @@ body, html {
     position: absolute;
     top: 50%;
     left: 50%;
+    z-index: 2;
 }
 .point:hover .text
 {
@@ -235,8 +217,6 @@ body, html {
     background-size: 150%;
     transition: background-size 0.5s ease-in-out; 
 } */
-
-/* Other styles remain the same */
 
 .side-window .content0,
 .side-window .content1,
@@ -346,17 +326,6 @@ body, html {
 }
 /********************************/
 
-/* .side-window-image {
-    background-image: url(https://images.unsplash.com/photo-1641326201918-3cafc641038e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1887&q=80);
-    background-position: center;
-    background-size: cover;
-    transform: scale(0.92,0.9);
-    height: 300px;
-    width: 100%;
-    border-radius: 12px;
-    margin: 20 auto; /* Add this line to center the image horizontally
-} */
-
 /* =======================Side bar Button=========================== */
 .side-window .side-button-container {
     position: absolute;
@@ -385,25 +354,6 @@ body, html {
     background-color: rgb(255, 255, 255);
     color: rgb(0, 0, 0);
 }
-
-/* .side-my-button-top {
-    padding: 10px 20px;
-    border: none;
-    background-color: transparent;
-    color: rgb(0, 0, 0);
-    font-size: 1.5em;
-    cursor: pointer;
-    outline: none;
-    border-radius: 20px;
-    border: 2.4px solid rgb(0, 0, 0);
-    transition: background-color 0.3s, color 0.3s;
-    margin: 5px;
-}
-
-.side-my-button-top:hover {
-    background-color: rgb(0, 0, 0);
-    color: rgb(255, 255, 255);
-} */
 
 /* ================================================== */
 h2{
@@ -436,6 +386,7 @@ p{
     transition: 0.3s ease-in-out;
     top: 90%;
     left: 3%;
+    z-index: 0;
 }
 
 #checkbox:checked {

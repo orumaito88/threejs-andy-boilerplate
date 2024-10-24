@@ -97,7 +97,7 @@ const loadingManager = new THREE.LoadingManager(
             gsap.to(buttonElement, { duration: 0.7, opacity: 1 ,delay: 1})
             gsap.to(buttonElement, { duration: 1, y: '50%', delay: 1, ease: 'power2.out' })
             loadingBarElement.style.display = 'none';
-
+            loadingBarElement.remove(loadingBarElement);
         })
         
     },
@@ -124,30 +124,10 @@ document.body.appendChild(container)
 
 /////////////////////////////////////////////////////////////////////////
 
-
-
 ///// SCENE CREATION
 const scene = new THREE.Scene()
 scene.background = new THREE.Color('#d6e5ff')
 
-// const cubeTextureLoader = new THREE.CubeTextureLoader()
-
-// const environmentMap = cubeTextureLoader.load([
-//     './enviromentMaps/nx.jpg',
-//     './enviromentMaps/nx.jpg',
-//     './enviromentMaps/py.jpg',
-//     './enviromentMaps/ny.jpg',
-//     './enviromentMaps/pz.jpg',
-//     './enviromentMaps/nz.jpg'
-// ])
-// console.log(environmentMap)
-// scene.background = environmentMap
-// scene.environment = environmentMap
-
-// scene.environmentIntensity = 1
-// scene.backgroundBlurriness = 0.2
-// scene.backgroundIntensity = 1
-/////////////////////////////////////////////////////////////////////////
 
 // Create a fog effect
 const fog = new THREE.FogExp2(0xd6e5ff, 0.003); // Use exponential fog
@@ -172,12 +152,6 @@ container.appendChild(renderer.domElement) // add the renderer to html div
 ///// CAMERAS CONFIG
 const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 10, 2000)
 camera.position.set(180, 100, 40)
-const cameraHomePosition = new THREE.Vector3(
-112,
-108,
-155
-)
-// camera.lookAt(new THREE.Vector3(100,100,100))
 scene.add(camera)
 
 /////////////////////////////////////////////////////////////////////////
@@ -258,48 +232,38 @@ const button = document.querySelector('.my-button')
 // Delay the event listener by 1 second
 setTimeout(function() {
     button.addEventListener('click', function() {
-        //loading video opacity 1
-        
-        loadingBarElement.style.display = '';
-        loadingBarElement.style.opacity = 1;
-        gsap.to(loadingBarElement, { duration: 3.8 , opacity: 0,
-            onComplete: function(){
-                setTimeout(() => {
-                    loadingBarElement.style.display = 'none';
-                }, 2000);
-            }
-        });
-
         isIntro = false;
         linkAnimOut();
     if(!isIntro) {
-        //ADD visibility to the POI elements
-        points.forEach(point => {
-            point.element.addEventListener('mouseover', e => {
-                linkAnimIn(1.4);
-            });
-            point.element.addEventListener('mouseout', e => {
-                linkAnimOut();
-            });
-            point.element.classList.add('visible')
-        })
-        // Call the function to change the uAlpha value
         changeUAlphaValue()
-        // Make the title disappear
-        //titleElement.style.opacity = '0'
-        titleElement.parentNode.removeChild(titleElement)
+        introAnimation();
         // Make the button disappear
-        // buttonElement.style.opacity = '0'
-        button.parentNode.removeChild(button)
+        buttonElement.style.opacity = '0'
+        buttonElement.remove(button)
+        // Make the title disappear
+        // titleElement.style.opacity = '0'
+        // titleElement.parentNode.removeChild(titleElement)
+        gsap.to(titleElement, {
+            duration: 3,
+            top: -250,
+            delay: 1,
+            // opacity: 0,
+            scale: 3,
+            onComplete: function(){
+                titleElement.style.opacity = '0'
+                titleElement.parentNode.removeChild(titleElement)
+            }
+        });
+
+
     }
     })
 }, 4000) // 1000 milliseconds = 1 second
 // Function to change the uAlpha value
 function changeUAlphaValue() {
-    gsap.to(overlayMaterial.uniforms.uAlpha, {duration: 1, value: 0.0})
+    gsap.to(overlayMaterial.uniforms.uAlpha, {duration: 3, value: 0.0, })
 }
 //////////////////////////////////////////////////////////////////////////
-
 
 /**
  * Overlay
@@ -328,31 +292,15 @@ scene.add(overlay)
 
 ////////////////////////////////////////////////////////////////////////
 
-// /* SUPER MEGA PLANE */
 
-// const planeGeometry = new THREE.BoxGeometry(10000, 2, 10000, 1);
-// const planeMaterial = new THREE.MeshBasicMaterial({
-//     color: 0xffffff,
-//     // side: THREE.DoubleSide
-// });
-
-// const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-
-// plane.position.set(0, -1.1, 0);
-// // Add the plane to the scene
-
-// scene.add(plane);
-
-
-////////////////////////////////////////////////////////////////////////
 ///// LOADING GLB/GLTF MODEL FROM BLENDER
 // let myModel;
-let spazioBianco;
-let binarioCentrale;
-let baia;
-let vascello;
-let temporanea;
-let officina;
+// let spazioBianco;
+// let binarioCentrale;
+// let baia;
+// let vascello;
+// let temporanea;
+// let officina;
 let alberi;
 let alberi2;
 let strada;
@@ -371,36 +319,33 @@ loader.load('models/gltf/DumboMappa3D.glb', function (gltf) {
                 alberi2 = child;
                 alberi2.children[1].material.opacity = 1.5;
                 break;
-            case 'Spazio_Bianco_(Bianco)':
-                spazioBianco = child;
-                // console.log(spazioBianco.children[1].material);
-                for(let i = 0; i < spazioBianco.children.length; i++){
-                    // console.log(spazioBianco.children[i].material);
-                    // spazioBianco.children[i].material.visible=false;
-                }
-                
-        console.log(child.name)
-                break;
-            case 'Binario Centrale':
-                binarioCentrale = child;
-        console.log(child.name)
-                break;
-            case 'Baia':
-                baia = child;
-        console.log(child.name)
-                break;
-            case 'Vascello_(Rosso)':
-                vascello = child;
-        console.log(child.name)
-                break;
-            case 'Temporanea_(Magenta)001':
-                temporanea = child;
-        console.log(child.name)
-                break;
-            case 'Officina_(Petrolio)':
-                officina = child;                
-        console.log(child.name)
-                break;
+        //     case 'Spazio_Bianco_(Bianco)':
+        //         spazioBianco = child;
+        //         // console.log(spazioBianco.children[1].material);
+        //         for(let i = 0; i < spazioBianco.children.length; i++){
+        //         }
+        // console.log(child.name)
+        //         break;
+        //     case 'Binario Centrale':
+        //         binarioCentrale = child;
+        // console.log(child.name)
+        //         break;
+        //     case 'Baia':
+        //         baia = child;
+        // console.log(child.name)
+        //         break;
+        //     case 'Vascello_(Rosso)':
+        //         vascello = child;
+        // console.log(child.name)
+        //         break;
+        //     case 'Temporanea_(Magenta)001':
+        //         temporanea = child;
+        // console.log(child.name)
+        //         break;
+        //     case 'Officina_(Petrolio)':
+        //         officina = child;                
+        // console.log(child.name)
+        //         break;
             case 'Strada':
                 strada = child
         console.log(child.name)
@@ -411,7 +356,6 @@ loader.load('models/gltf/DumboMappa3D.glb', function (gltf) {
 })
 
 function ToggleTreeVisibility(visibility){
-    // console.log(alberi.scale);
     if(visibility){
         gsap.to(alberi.position, {duration: 2, x: alberi.position.x, y: 0, z: alberi.position.z})
         gsap.to(alberi2.position, {duration: 2, x: alberi2.position.x, y: 0, z: alberi2.position.z})
@@ -420,39 +364,7 @@ function ToggleTreeVisibility(visibility){
         gsap.to(alberi.position, {duration: 2, x: alberi.position.x, y: -22, z: alberi.position.z})
         gsap.to(alberi2.position, {duration: 2, x: alberi2.position.x, y: -22, z: alberi2.position.z})
     }
-    // alberi.children[0].visible = visibility;
-    // alberi.children[1].visible = visibility;
-    // alberi2.children[0].visible = visibility;
-    // alberi2.children[1].visible = visibility;
 }
-
-
-// function toggleVisibility(clicked, bool) {
-//     spazioBianco.children.forEach(child => {
-//         child.material.visible = bool;
-//     });
-//     // binarioCentrale.children.forEach(child => {
-//     //     child.material.visible = false;
-//     // });
-//     // baia.children.forEach(child => {
-//     //     child.material.visible = false;
-//     // });
-//     vascello.children.forEach(child => {
-//         child.material.visible = bool;
-//     });
-//     temporanea.children.forEach(child => {
-//         child.material.visible = bool;
-//     });
-//     officina.children.forEach(child => {
-//         child.material.visible = bool;
-//     });
-
-//     if(clicked) {
-//     clicked.children.forEach(child => {
-//         child.material.visible = !bool;
-//     });
-//     }
-// }
 
 //POI: Points Of INTEREST
 const points = [
@@ -525,30 +437,125 @@ isIntro = true;
 //// INTRO CAMERA ANIMATION USING TWEEN
 function introAnimation() {
     controls.enabled = false; // Disable orbit controls to animate the camera
-
+    isZoom = true;
     // Initial camera position
-    camera.position.set(23, 21, -43);
-
+    camera.position.set(377, 80, 280);        //PUNTO 1
+    camera.rotation.set(-0.42, 0.85, 0.32);
     // Animate camera position and rotation
-    gsap.to(camera.position, {
+    gsap.to(camera.position, {      //PUNTO 2 (DUMBO CUBI):
         duration: 4,
         delay: 1,
-        x: 112,
-        y: 108,
-        z: 155,
-        ease: "power2.out", // Easing function for smooth transition
+        x: 86.1,
+        y: 12,
+        z: 49.3,
+        ease: "power1.out", // Easing function for smooth transition
         onComplete: function()  //Only once Completed the animation, do... p.s. puoi usare anche: () => 
         {
-            // camera.position.set(112, 108, 155);
-            controls.enabled = true; // Enable orbit controls
-            setOrbitControlsLimits(); // Enable controls limits
-            // isIntro = false;
-            // camera.rotation.set(-0.6,0.5,0.34);
+            gsap.to(camera.position, {      //PUNTO 3 (SPAZIO BIANCO DI LATO):
+                duration: 3.5,
+                delay: .2,
+                x: -110,
+                y: 16,
+                z: 61.5,
+                ease: "power1.inOut", // Easing function for smooth transition
+                onComplete: function(){
+                    gsap.to(camera.position, {      //PUNTO 4 (IN FONDO, INTERRAIL):
+                        duration: 3,
+                        delay: .5,
+                        x: -253,
+                        y: 25,
+                        z: 70,
+                        ease: "power1.inOut", // Easing function for smooth transition
+                        onComplete: function(){
+                            gsap.to(camera.position, {      //PUNTO 6 (OFFICINA):
+                                duration: 5,
+                                delay: 0.5,
+                                x: 20.4,
+                                y: 20.9,
+                                z: 13,
+                                ease: "power1.inOut", // Easing function for smooth transition
+                                onComplete: function(){
+                                    gsap.to(camera.position, {      //PUNTO HOME:
+                                        duration: 2,
+                                        delay: 0,
+                                        x: 112,
+                                        y: 108,
+                                        z: 155,
+                                        ease: "power1.in", // Easing function for smooth transition
+                                        onComplete: function(){
+                                            isZoom = false;
+                                            points.forEach(point => {
+                                                point.element.addEventListener('mouseover', e => {
+                                                    linkAnimIn(0.6);
+                                                });
+                                                point.element.addEventListener('mouseout', e => {
+                                                    linkAnimOut();
+                                                });
+                                                point.element.classList.add('visible')
+                                            })
+                                        }
+                                    })
+                                }
+                            })
+                        }
+                    })
+                }
+            })
+        }
+    });
+
+    gsap.to(camera.rotation, {      //PUNTO 2 (DUMBO CUBI):
+        duration: 4,
+        delay: 1,
+        x: -0.12,
+        y: 0.89,
+        z: 0.09,
+        ease: "power1.out", // Easing function for smooth transition
+        onComplete: function()  //Only once Completed the animation, do... p.s. puoi usare anche: () => 
+        {
+            gsap.to(camera.rotation, {      //PUNTO 3 (SPAZIO BIANCO DI LATO):
+                duration: 3.5,
+                delay: .2,
+                x: -0.07,
+                y: -0.1,
+                z: 0.01,
+                ease: "power1.inOut", // Easing function for smooth transition
+                onComplete: function(){
+                    gsap.to(camera.rotation, {      //PUNTO 4 (IN FONDO, INTERRAIL):
+                        duration: 3,
+                        delay: 0.5,
+                        x: -0.1,
+                        y: -0.80,
+                        z: -0.1,
+                        ease: "power1.inOut", // Easing function for smooth transition
+                        onComplete: function(){
+                            gsap.to(camera.rotation, {      //PUNTO 6 (OFFICINA):
+                                duration: 5,
+                                delay: 0.5,
+                                x: -0.16,
+                                y: -1.18,
+                                z: -0.14,
+                                ease: "power1.inOut", // Easing function for smooth transition
+                                onComplete: function(){
+                                    gsap.to(camera.rotation, {      //PUNTO HOME:
+                                        duration: 2,
+                                        delay: 0,
+                                        x: -0.61,
+                                        y: 0.54,
+                                        z: 0.34,
+                                        ease: "power1.in", // Easing function for smooth transition
+                                        
+                                    })
+                                }
+                            })
+                        }
+                    })
+                }
+            })
         }
     });
 }
-
-introAnimation(); // Call intro animation on start
+// introAnimation(); // Call intro animation on start
 
 // Add event listeners to the points
 let cameraTarget = new THREE.Vector3(0.0,0.0,0.0);
@@ -626,8 +633,6 @@ points.forEach((point, index) => {
                 default:
                     console.error('Invalid point index');
             }
-            // camera.lookAt(cameraTarget);
-            // console.log(isZoom);
             animateCamera(index);
         }
     });
@@ -650,10 +655,10 @@ function manageWidget(index){
 }
 
 /////////////////////////////////////////////////////////////////////////
-const pointLight = new THREE.PointLight( 0xffffff, 0, 60 );
+const pointLight = new THREE.PointLight( 0xffffff, 0, 70 );
 pointLight.castShadow = true;
 pointLight.power = 0;
-
+let isPointOfInterest = false;
 //Function to animate the camera to the target point
 function animateCamera(index){
     if(isZoom === false){
@@ -663,31 +668,48 @@ function animateCamera(index){
             pointLight.position.x = points[index].position.x + 20 ;
             pointLight.position.y = points[index].position.y + 50;
             pointLight.position.z = points[index].position.z + 3 ;
+            if(index == 0){     //spazio bianco case
+                pointLight.position.x = points[index].position.x;
+                pointLight.position.y = points[index].position.y + 50;
+                pointLight.position.z = points[index].position.z - 5;
+            }
+            if(index == 1){     //binario centrale case
+                pointLight.position.x = points[index].position.x - 10 ;
+                pointLight.position.y = points[index].position.y + 50;
+                pointLight.position.z = points[index].position.z + 5 ;
+            }
             if(index == 2){     //baia case
+                pointLight.distance = 60; 
                 pointLight.position.x = points[index].position.x + 5 ;
                 pointLight.position.y = points[index].position.y + 50;
                 pointLight.position.z = points[index].position.z - 8 ;
             }
             if(index == 5){     //officina case
-                pointLight.position.x = points[index].position.x -10 ;
+                pointLight.position.x = points[index].position.x - 10 ;
                 pointLight.position.y = points[index].position.y + 50;
                 pointLight.position.z = points[index].position.z - 5 ;
             }
 
             scene.add(pointLight);
             gsap.to(pointLight, {
-                power: 40,
+                power: 50,
                 duration: 5,
             })
         }
         isZoom = true;
-        ToggleTreeVisibility(false);
         //remove visible from points
         points.forEach((point) => {
             point.element.classList.remove('visible');
         });
         disableOrbitControlsLimits();
         // console.log('Was at home position, going to target position')
+        if(index == 6){         //casi speciali in cui non si zooma
+            exitButton.classList.add('visible');
+            isZoom = true;
+            isPointOfInterest = true;
+            return;
+        }
+        ToggleTreeVisibility(false);
         gsap.to(camera.rotation, {
             duration: 2.5,
             x: cameraRotation.x,
@@ -725,6 +747,14 @@ function animateCamera(index){
         }
         // console.log('Not at home position, returning to home position')
         exitButton.classList.remove('visible');
+        if(isPointOfInterest){         //casi speciali in cui non si zooma
+            points.forEach((point) => {
+                point.element.classList.add('visible');
+            });
+            isZoom = false;
+            isPointOfInterest = false;
+            return;
+        }
         ToggleTreeVisibility(true);
         // ToggleTreeVisibility(true);
         gsap.to(camera.rotation, {
@@ -775,6 +805,7 @@ exitButton.addEventListener('click', () => {
     // console.log('Exit button clicked');
     animateCamera();
     // toggleVisibility(null, true);
+
     linkAnimOut();
     sideWindow.classList.remove('visible');
     for(let i = 0; i < sideWindowContent.length; i++){
@@ -868,6 +899,7 @@ document.addEventListener('mousemove', (e) => {
         y: e.clientY
     };
 }, false);
+//////////////////////////////////////////////////////////////////////
 controls.autoRotate = false
 
 //// RENDER LOOP FUNCTION
